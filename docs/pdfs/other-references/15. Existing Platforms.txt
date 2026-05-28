@@ -1,0 +1,113 @@
+Platform-by-Platform Analysis
+1. Groww
+What it does well:
+
+Buy/sell stocks, MFs, ETFs, SIPs — clean UI
+Basic portfolio analysis: XIRR, sector allocation, benchmark vs NIFTY 50
+Recently added Portfolio Analysis tab with time-series growth charts
+
+What it lacks:
+
+Zero strategy backtesting
+No market regime awareness
+No risk metrics (Sharpe, MaxDD, Volatility)
+Analytics = tracking, not evaluation
+No "why did my portfolio underperform in 2022?" analysis
+
+
+2. Zerodha Kite + Streak
+What it does well:
+
+Streak: no-code strategy builder, backtest with P&L curve, win/loss, drawdown
+150+ indicator-based strategies, live deployment
+Chart-to-Backtest (CTB) via Streak integration
+Sensibull: options strategy builder with payoff analysis
+
+What it lacks (significant gaps):
+
+In Indian context, no historical options data; cannot do portfolio-level testing — strategies testable only on one symbol at a time, cannot run a strategy in parallel on multiple symbols Substack
+Streak = indicator-based rules only — no ML, no regime detection
+Streak is an indicator/technical strategy tool, not built for complex multi-leg structures; no multi-timeframe logic or dynamic exit triggers Algotest
+Sensibull explicitly has no historical backtesting — payoff analysis only
+No market regime detection or conditional performance breakdown
+
+
+3. TradingView
+What it does well:
+
+Pine Script backtesting — highly flexible, custom strategy logic
+Deep Backtesting (Premium+) on full historical data
+100+ indicators, global data, beautiful charts
+Large community script library
+
+What it lacks:
+
+Buy & Hold only; no rebalancing. Past performance does not guarantee similar future behavior. Markets can change rapidly, which may render historical backtests less predictive over time — Market Regimes & Volatility noted as a limitation TradingView
+Requires Pine Script coding — not accessible to retail/non-coders
+Deep Backtesting available only for Premium and higher plan users — paywalled TradingView
+No regime detection, no "which strategy works best in current market conditions"
+Single-symbol testing only — no portfolio-level comparison
+
+
+4. MoneyControl (Pro)
+What it does well:
+
+Huge Indian market news, live quotes, expert analysis
+Stock screeners (200+), fundamental research, portfolio tracking
+270+ companies covered by analysts
+"Trade Like a Pro" — technical ratings
+
+What it lacks:
+
+Zero backtesting capability
+No strategy evaluation
+Analytics = news + fundamental data, NOT quantitative performance evaluation
+No regime detection, no risk-adjusted metrics beyond basic tracking
+Research is analyst-driven opinion, not systematic evaluation
+
+
+5. INDmoney
+What it does well:
+
+Unified net worth tracking across stocks, MF, EPF, FD, NPS
+XIRR returns, benchmark comparison (S&P 500, NIFTY)
+Clean UI for retail investors, 1.2 Cr+ users
+
+What it lacks:
+
+Purely a tracking and investment app — no analysis depth
+No backtesting of any kind
+No strategy comparison, no regime detection
+Portfolio = what you hold; no "should you hold it" evaluation
+
+
+6. Smallcase
+What it does well:
+
+Thematic baskets of stocks curated by experts
+Shows historical performance of each smallcase
+Sector-level diversification, easy SIP-style investing
+
+What it lacks:
+
+Historical performance shown = marketing, not rigorous backtesting
+No user-defined strategy testing
+No regime analysis — "how did this basket perform in 2020 crash vs 2021 bull?"
+No risk metrics breakdown (just returns shown)
+No ML or systematic evaluation layer
+
+
+7. QuantConnect / Backtrader (Global platforms, used by Indian quants)
+What they do well:
+
+Serious backtesting infrastructure
+Multi-asset, portfolio-level, event-driven simulation
+QuantConnect: cloud-based, full ecosystem from research to live trading
+
+What they lack for your target user:
+
+QuantConnect is not for beginners — documentation is dense, geared toward professional-level algo traders and institutional setups Medium
+Implementation risk is real — Zipline-Reloaded calendar bugs, NautilusTrader compounding defects, QuantConnect Lean's C# core made faithful strategy translation difficult arXiv
+No Indian-market-specific features (NSE/BSE data native, Indian rf rate, NIFTY regime context)
+No regime detection built in
+Zero accessibility for retail Indian users

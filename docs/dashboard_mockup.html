@@ -1,0 +1,159 @@
+
+<style>
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.db{display:grid;grid-template-columns:200px minmax(0,1fr);gap:0;min-height:700px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)}
+.sidebar{background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);padding:16px;display:flex;flex-direction:column;gap:16px}
+.sb-logo{font-size:13px;font-weight:500;color:var(--color-text-primary);padding-bottom:12px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.sb-section{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.sb-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
+.sb-select{width:100%;font-size:12px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)}
+.sb-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.run-btn{width:100%;padding:8px;font-size:12px;font-weight:500;border-radius:var(--border-radius-md);background:var(--color-background-info);color:var(--color-text-info);border:0.5px solid var(--color-border-info);cursor:pointer;margin-top:auto}
+.main{padding:16px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.metrics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric-val{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.metric-val.pos{color:#1D9E75}
+.metric-val.neg{color:#E24B4A}
+.section-title{font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px}
+.chart-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px}
+.equity-area{position:relative;height:130px}
+.regime-bar{height:28px;border-radius:var(--border-radius-md);overflow:hidden;display:flex}
+.rb-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.two-col{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px}
+.rec-box{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:var(--border-radius-md);padding:12px}
+.rec-title{font-size:11px;color:#085041;font-weight:500;margin-bottom:6px}
+.rec-strategy{font-size:16px;font-weight:500;color:#085041;margin-bottom:4px}
+.rec-sub{font-size:11px;color:#0F6E56}
+.regime-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:#FAEEDA;color:#633806;margin-bottom:8px}
+.risk-rows{display:flex;flex-direction:column;gap:6px}
+.risk-row{display:flex;justify-content:space-between;align-items:center;font-size:11px}
+.risk-label{color:var(--color-text-secondary)}
+.risk-val{font-weight:500;color:var(--color-text-primary)}
+.risk-val.warn{color:#BA7517}
+.risk-val.danger{color:#E24B4A}
+.heatmap{display:grid;grid-template-columns:80px repeat(3,minmax(0,1fr));gap:3px}
+.hm-head{font-size:10px;color:var(--color-text-secondary);text-align:center;padding:4px 2px}
+.hm-label{font-size:10px;color:var(--color-text-secondary);display:flex;align-items:center}
+.hm-cell{border-radius:4px;padding:5px 4px;text-align:center;font-size:10px;font-weight:500}
+.bull{background:#E1F5EE;color:#085041}
+.bear{background:#FCEBEB;color:#791F1F}
+.side{background:#FAEEDA;color:#633806}
+.leg{display:flex;gap:12px;margin-top:6px}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-secondary)}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+</style>
+<h2 class="sr-only">Dashboard mockup for the Indian Market Portfolio Intelligence platform showing sidebar controls, metric cards, equity curve, regime timeline, recommendation, risk panel, and regime heatmap.</h2>
+<div style="padding:1rem 0">
+<div class="db">
+  <div class="sidebar">
+    <div class="sb-logo"><i class="ti ti-chart-line" aria-hidden="true" style="font-size:14px;margin-right:6px"></i>Portfolio Intel</div>
+    <div>
+      <div class="sb-section">Inputs</div>
+      <div class="sb-label">Stock / index</div>
+      <select class="sb-select"><option>NIFTY 50 (^NSEI)</option><option>SENSEX</option><option>Reliance</option></select>
+    </div>
+    <div>
+      <div class="sb-label">Date range</div>
+      <div class="sb-row">
+        <input type="text" value="Jan 2015" style="font-size:11px;padding:5px 6px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);width:100%">
+        <input type="text" value="Dec 2024" style="font-size:11px;padding:5px 6px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);width:100%">
+      </div>
+    </div>
+    <div>
+      <div class="sb-label">Strategy</div>
+      <select class="sb-select"><option>Auto (recommended)</option><option>Buy & Hold</option><option>MA Crossover</option><option>RSI</option><option>Momentum</option></select>
+    </div>
+    <div>
+      <div class="sb-label">Risk preference</div>
+      <select class="sb-select"><option>Medium</option><option>Low</option><option>High</option></select>
+    </div>
+    <button class="run-btn"><i class="ti ti-player-play" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Run analysis</button>
+  </div>
+
+  <div class="main">
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="metric-label">CAGR</div><div class="metric-val pos">14.2%</div></div>
+      <div class="metric-card"><div class="metric-label">Sharpe ratio</div><div class="metric-val pos">1.38</div></div>
+      <div class="metric-card"><div class="metric-label">Max drawdown</div><div class="metric-val neg">-28.4%</div></div>
+      <div class="metric-card"><div class="metric-label">Volatility</div><div class="metric-val">18.7%</div></div>
+    </div>
+
+    <div class="chart-box">
+      <div class="section-title"><i class="ti ti-trending-up" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Equity curve</div>
+      <div class="equity-area">
+        <svg width="100%" height="130" viewBox="0 0 500 130" preserveAspectRatio="none">
+          <polyline points="0,110 40,105 80,90 120,95 160,120 200,115 240,85 280,60 320,50 360,40 400,30 440,20 500,15" fill="none" stroke="#1D9E75" stroke-width="2"/>
+          <polyline points="0,110 40,108 80,100 120,102 160,115 200,112 240,95 280,80 320,75 360,68 400,60 440,55 500,50" fill="none" stroke="#888780" stroke-width="1.5" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="leg" style="margin-top:2px">
+          <div class="leg-item"><div class="leg-dot" style="background:#1D9E75"></div>MA Crossover</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#888780"></div>Buy & Hold (benchmark)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <div class="section-title"><i class="ti ti-calendar-stats" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Market regime timeline</div>
+      <div class="regime-bar">
+        <div class="rb-seg bull" style="width:30%;color:#085041">Bull</div>
+        <div class="rb-seg bear" style="width:18%;color:#791F1F">Bear</div>
+        <div class="rb-seg side" style="width:22%;color:#633806">Sideways</div>
+        <div class="rb-seg bull" style="width:18%;color:#085041">Bull</div>
+        <div class="rb-seg bear" style="width:12%;color:#791F1F">Bear</div>
+      </div>
+      <div class="leg" style="margin-top:8px">
+        <div class="leg-item"><div class="leg-dot" style="background:#1D9E75"></div>Bull</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Bear</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>Sideways</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-title"><i class="ti ti-table" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Regime-wise performance</div>
+        <div class="heatmap">
+          <div class="hm-head"></div>
+          <div class="hm-head">Bull</div>
+          <div class="hm-head">Bear</div>
+          <div class="hm-head">Sideways</div>
+          <div class="hm-label">Buy & Hold</div>
+          <div class="hm-cell bull">18.4%</div>
+          <div class="hm-cell bear">-12.1%</div>
+          <div class="hm-cell side">4.2%</div>
+          <div class="hm-label">MA Cross</div>
+          <div class="hm-cell bull">22.1%</div>
+          <div class="hm-cell bear">-4.3%</div>
+          <div class="hm-cell side">6.8%</div>
+          <div class="hm-label">RSI</div>
+          <div class="hm-cell bull">14.2%</div>
+          <div class="hm-cell bear">-8.7%</div>
+          <div class="hm-cell side">9.1%</div>
+          <div class="hm-label">Momentum</div>
+          <div class="hm-cell bull">26.3%</div>
+          <div class="hm-cell bear">-18.2%</div>
+          <div class="hm-cell side">2.1%</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="rec-box">
+          <div class="rec-title"><i class="ti ti-bulb" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Recommendation</div>
+          <div class="regime-badge">Current regime: Sideways</div>
+          <div class="rec-strategy">RSI strategy</div>
+          <div class="rec-sub">Best Sharpe in sideways regime (1.42). Historically outperforms benchmark 68% of sideways periods.</div>
+        </div>
+        <div class="chart-box">
+          <div class="section-title"><i class="ti ti-shield" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Risk estimate</div>
+          <div class="risk-rows">
+            <div class="risk-row"><span class="risk-label">Expected drawdown</span><span class="risk-val warn">-8% to -14%</span></div>
+            <div class="risk-row"><span class="risk-label">Volatility band</span><span class="risk-val">16% – 22%</span></div>
+            <div class="risk-row"><span class="risk-label">Worst-case (bear)</span><span class="risk-val danger">-28.4%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
