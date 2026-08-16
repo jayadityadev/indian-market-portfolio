@@ -5,6 +5,7 @@ description = "ML-augmented backtesting and regime detection dashboard for India
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "alembic>=1.19.1",
     "asyncpg>=0.29.0",
     "fastapi>=0.115.0",
     "google-genai>=0.1.1",
