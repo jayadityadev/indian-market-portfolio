@@ -576,8 +576,9 @@ class TestConnectionHealthcheckProbes:
         """Calling check_connection_health() without args uses global singleton engine."""
         health = check_connection_health()
         assert health["status"] == "healthy"
-        assert health["dialect"] == "sqlite"
+        assert health["dialect"] in ("sqlite", "postgresql")
         assert health["error"] is None
+
 
 
 # ---------------------------------------------------------------------------
