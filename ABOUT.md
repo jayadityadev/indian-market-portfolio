@@ -86,27 +86,45 @@ Advanced traders, quants, finance students, and strategy researchers get:
 # 5. System Architecture
 
 ```mermaid
-graph TD
-    A[yfinance OHLCV] --> B[Data Pipeline]
-    B --> |20+ features| C[Gaussian HMM Regime Engine]
-    C --> |Bull/Bear/Sideways| D[Strategy Engine]
-    D --> |signals| E[Backtest Engine]
-    E --> |metrics + curves| F[Analysis API]
-    C --> |features| G[ML Recommender - XGBoost]
-    G --> |probabilities| F
-    C --> |features| H[ML Benchmark]
-    H --> |XGBoost| F
-    H --> |LSTM-DNN| F
-    E --> |metrics| I[Risk Forecaster - Bootstrap MC]
-    I --> |drawdown bands| F
-    F --> |AnalyzeResponse| J[LLM Analyst Waterfall]
-    J --> |Gemini| K[Report]
-    J --> |Groq| K
-    J --> |NVIDIA NIM| K
-    J --> |OpenRouter| K
-    J --> |Mock fallback| K
-    F --> |JSON| L[Next.js Frontend]
-    F --> |persist| M[(Neon PostgreSQL)]
+flowchart TD
+    subgraph Ingestion["Data Ingestion & Feature Layer"]
+        A["yfinance Daily OHLCV"] --> B["Data Pipeline"]
+        B --> FE["20+ Causal Technical Features"]
+    end
+
+    subgraph Modeling["Quantitative Models & Benchmark"]
+        FE --> C["Gaussian HMM Regime Engine (3 States)"]
+        C -->|Bull / Bear / Sideways| D["Strategy Engine (6 Backtested Models)"]
+        D -->|Signals| E["Backtest Engine (1-Day Lag, Costs)"]
+        FE --> G["ML Recommender (XGBoost + Fallback)"]
+        C --> G
+        FE --> H["ML Benchmark Suite (XGBoost vs LSTM-DNN)"]
+    end
+
+    subgraph Inference["Risk & AI Inference"]
+        E --> I["Risk Forecaster (Bootstrap Monte Carlo)"]
+        G --> J["LLM Market Analyst (Multi-Provider Waterfall)"]
+        C --> J
+    end
+
+    subgraph Service["Backend, Storage & Client"]
+        E --> API["FastAPI REST Backend (/api/v1/)"]
+        I --> API
+        H --> API
+        J --> API
+        API <--> M[("Neon PostgreSQL / SQLite")]
+        API --> UI["Next.js 16 + React 19 Frontend<br/>(/, /regime, /strategies, /benchmark, /report)"]
+    end
+
+    classDef ing fill:#1e293b,stroke:#38bdf8,stroke-width:1px,color:#f8fafc;
+    classDef mod fill:#1e293b,stroke:#f59e0b,stroke-width:1px,color:#f8fafc;
+    classDef inf fill:#1e293b,stroke:#10b981,stroke-width:1px,color:#f8fafc;
+    classDef srv fill:#1e293b,stroke:#a855f7,stroke-width:1px,color:#f8fafc;
+
+    class A,B,FE ing;
+    class C,D,E,G,H mod;
+    class I,J inf;
+    class API,M,UI srv;
 ```
 
 ---

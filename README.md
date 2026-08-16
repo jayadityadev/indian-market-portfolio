@@ -102,47 +102,55 @@ LLM provider cascade: **Gemini → Groq → NVIDIA NIM → OpenRouter → Mock**
 
 ## Architecture
 
-```
-yfinance OHLCV
-       │
-       ▼
-Data Pipeline ─────────────────────────────────────────────────────────┐
-  └─ feature engineering (RSI, MACD, ADX, volatility, rolling returns)  │
-       │                                                                 │
-       ▼                                                                 │
-Regime Engine (Gaussian HMM, 3 states)                                  │
-  └─ Bull / Bear / Sideways labels                                      │
-       │                                                                 │
-       ▼                                                                 │
-Strategy Engine (6 strategies)    ML Recommender (XGBoost + fallback)    │
-  └─ signals → BacktestEngine      └─ regime-conditional probabilities  │
-       │                                      │                         │
-       ▼                                      │                         │
-ML Benchmark Pipeline                         │                         │
-  ├─ XGBoost classifier                       │                         │
-  └─ LSTM-DNN (PyTorch)                       │                         │
-       │                                      │                         │
-       ▼                                      ▼                         │
-Risk Forecaster (bootstrap MC)    LLM Analyst (provider waterfall)      │
-  └─ drawdown bands                └─ Gemini / Groq / NVIDIA / OR / Mock│
-       │                                      │                         │
-       └──────────────────────────────────────┘                         │
-                          │                                             │
-                          ▼                                             │
-                FastAPI /api/v1/                                        │
-                          │                                             │
-                          ▼                                             │
-               Neon PostgreSQL (persistence)                            │
-               ├─ BacktestHistory                                       │
-               ├─ MarketRegimeLog                                       │
-               └─ ModelBenchmarkResults                                 │
-                          │                                             │
-                          ▼                                             │
-              Next.js 16 + React 19 Frontend ◄─────────────────────────┘
-              ├─ / (Home — Beginner / Pro mode)
-              ├─ /regime (HMM timeline view)
-              ├─ /benchmark (XGBoost vs LSTM)
-              └─ /report (AI Analyst with provider picker)
+```mermaid
+flowchart TD
+    subgraph Data["1. Data Ingestion & Feature Engineering"]
+        YF["yfinance Daily OHLCV"] --> DP["Data Pipeline"]
+        DP --> FE["20+ Technical Features<br/>(RSI, MACD, ADX, Volatility, ATR)"]
+    end
+
+    subgraph Core["2. Core Quantitative Engines"]
+        FE --> HMM["Regime Engine<br/>(Gaussian HMM 3-States)"]
+        HMM -->|Bull / Bear / Sideways| SE["Strategy Engine<br/>(6 Quant Strategies)"]
+        HMM -->|Regime Signals| MLR["ML Recommender<br/>(XGBoost + Causal Fallback)"]
+        FE --> MLR
+        SE --> BE["Backtest Engine<br/>(1-Day Lag, STT/Slippage)"]
+        FE --> MLB["ML Benchmark Pipeline<br/>(XGBoost vs PyTorch LSTM-DNN)"]
+    end
+
+    subgraph Intelligence["3. Risk & AI Intelligence"]
+        BE --> RF["Risk Forecaster<br/>(Bootstrap Monte Carlo 63-Day)"]
+        HMM --> LLM["LLM Market Analyst<br/>(Waterfall: Gemini → Groq → NIM → OpenRouter → Mock)"]
+        MLR --> LLM
+    end
+
+    subgraph API["4. Backend & Persistence"]
+        BE --> FAST["FastAPI REST API (/api/v1/)"]
+        RF --> FAST
+        LLM --> FAST
+        MLB --> FAST
+        FAST <--> DB[("Neon PostgreSQL<br/>(Serverless DB + SQLite Fallback)")]
+    end
+
+    subgraph UI["5. Frontend Presentation (Next.js 16 + React 19)"]
+        FAST --> HOME["/ (Adaptive Landing: Beginner Brief vs Pro Telemetry)"]
+        FAST --> REGIME["/regime (HMM Timeline & Distribution)"]
+        FAST --> STRAT["/strategies (Interactive Animated Simulations)"]
+        FAST --> BENCH["/benchmark (XGBoost vs LSTM-DNN Scorecard)"]
+        FAST --> REP["/report (AI Analyst with Provider Selector)"]
+    end
+
+    classDef data fill:#1e293b,stroke:#38bdf8,stroke-width:1px,color:#f8fafc;
+    classDef engine fill:#1e293b,stroke:#f59e0b,stroke-width:1px,color:#f8fafc;
+    classDef intel fill:#1e293b,stroke:#10b981,stroke-width:1px,color:#f8fafc;
+    classDef api fill:#1e293b,stroke:#a855f7,stroke-width:1px,color:#f8fafc;
+    classDef ui fill:#1e293b,stroke:#ec4899,stroke-width:1px,color:#f8fafc;
+
+    class YF,DP,FE data;
+    class HMM,SE,BE,MLR,MLB engine;
+    class RF,LLM intel;
+    class FAST,DB api;
+    class HOME,REGIME,STRAT,BENCH,REP ui;
 ```
 
 ---
