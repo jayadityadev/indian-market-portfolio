@@ -15,8 +15,9 @@ if str(SRC_DIR) not in sys.path:
 from api.schemas import RecommendResponse, StrategyProbability, RiskForecast
 from data_pipeline import load_data
 from backtester import run_backtest
-from regime_detector import get_current_regime, get_regime_performance
+from regime_detector import get_regime_performance
 from classifier_inference import get_strategy_probabilities
+from model_registry import recommendation_state
 from risk_forecaster import simulate_drawdowns
 from strategies import (
     buy_and_hold, ma_crossover, rsi_strategy, momentum_strategy,
@@ -27,6 +28,7 @@ import numpy as np
 import pandas as pd
 
 router = APIRouter()
+SUPPORTED_TICKER = "^NSEI"
 
 STRATEGY_MAP = {
     "Buy & Hold": buy_and_hold,
@@ -41,8 +43,14 @@ STRATEGY_MAP = {
 @router.get("/recommend", response_model=RecommendResponse)
 def get_recommendation(ticker: str = Query(default="^NSEI")):
     """Get strategy recommendation with ML probabilities and risk forecast."""
+    if ticker != SUPPORTED_TICKER:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Current canonical dataset supports {SUPPORTED_TICKER} only.",
+        )
     base = PROJECT_ROOT
     models_dir = base / "models"
+    model_state = recommendation_state(models_dir)
 
     # Load data
     try:
@@ -50,17 +58,21 @@ def get_recommendation(ticker: str = Query(default="^NSEI")):
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Data load failed: {exc}")
 
-    # Current regime
-    try:
-        current_regime = get_current_regime(df)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Regime detection failed: {exc}")
+    regime_df_path = base / "data" / "nifty50_regimes.parquet"
+    if not regime_df_path.exists():
+        raise HTTPException(status_code=503, detail="Causal regime artifact is unavailable.")
+    regime_df = pd.read_parquet(regime_df_path)
+    regime_df.index = pd.to_datetime(regime_df.index)
+    latest_regime = regime_df.dropna(subset=["regime"]).iloc[-1].to_dict()
+    current_regime = str(latest_regime["regime"])
 
     # ML probabilities
     probs: dict[str, float] = {}
     if len(df) >= 252:
         df_recent = df.iloc[-252:]
-        probs = get_strategy_probabilities(df_recent, current_regime, models_dir=models_dir)
+        probs = get_strategy_probabilities(df_recent, latest_regime, models_dir=models_dir)
+        if model_state["status"] != "validated_ml":
+            probs = {}
 
     prob_list = [StrategyProbability(strategy=k, probability=v) for k, v in probs.items()]
 
@@ -73,11 +85,8 @@ def get_recommendation(ticker: str = Query(default="^NSEI")):
     else:
         # Fallback to historical Sharpe
         source = "historical_sharpe"
-        regime_df_path = base / "data" / "nifty50_regimes.parquet"
+        all_results = {}
         if regime_df_path.exists():
-            regime_df = pd.read_parquet(regime_df_path)
-            regime_df.index = pd.to_datetime(regime_df.index)
-            all_results = {}
             for name, func in STRATEGY_MAP.items():
                 if name == "Buy & Hold":
                     continue
@@ -134,6 +143,8 @@ def get_recommendation(ticker: str = Query(default="^NSEI")):
         current_regime=current_regime,
         recommended_strategy=recommended,
         recommendation_source=source,
+        recommendation_status=model_state["status"],
+        recommendation_reason=model_state["reason"],
         recommended_exposure=exposure_limit,
         probabilities=prob_list,
         risk_forecast=risk,

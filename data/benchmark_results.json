@@ -1,0 +1,169 @@
+{
+  "paper_reference": "Alam et al. (2024). IEEE Access, 12, 122757-122768",
+  "model_architecture": "Hybrid 2-LSTM (64, 32) + 4-Dense (64, 64, 64, 64) + LayerNorm + Dropout",
+  "total_parameters": 49862,
+  "device": "cuda",
+  "xgboost_metrics": {
+    "accuracy": 0.4615,
+    "precision": 0.1364,
+    "recall": 0.1875,
+    "f1_score": 0.1579,
+    "training_time_sec": 0.6
+  },
+  "lstm_metrics": {
+    "loss": 1.3968,
+    "accuracy": 0.6154,
+    "precision": 0.2051,
+    "recall": 0.3333,
+    "f1_score": 0.254,
+    "training_time_sec": 0.61
+  },
+  "overfitting_gap": {
+    "loss_gap": 0.2966,
+    "accuracy_gap": 0.1802,
+    "f1_gap": -0.0961
+  },
+  "latency_benchmark": {
+    "xgboost": {
+      "mean_ms": 0.989,
+      "p50_ms": 0.471,
+      "p95_ms": 3.147,
+      "p99_ms": 4.905
+    },
+    "lstm_dnn": {
+      "mean_ms": 0.521,
+      "p50_ms": 0.508,
+      "p95_ms": 0.587,
+      "p99_ms": 0.656
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.753,
+      "val_loss": 1.7652,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.7318,
+      "val_loss": 1.7603,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.7205,
+      "val_loss": 1.754,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.7007,
+      "val_loss": 1.7459,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.6847,
+      "val_loss": 1.7379,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.6402,
+      "val_loss": 1.7288,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.6089,
+      "val_loss": 1.719,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.6062,
+      "val_loss": 1.7103,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 9,
+      "train_loss": 1.5684,
+      "val_loss": 1.7088,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 10,
+      "train_loss": 1.5242,
+      "val_loss": 1.7179,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 11,
+      "train_loss": 1.4399,
+      "val_loss": 1.7445,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 12,
+      "train_loss": 1.3758,
+      "val_loss": 1.7833,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 13,
+      "train_loss": 1.433,
+      "val_loss": 1.8225,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 14,
+      "train_loss": 1.4067,
+      "val_loss": 1.845,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 15,
+      "train_loss": 1.4811,
+      "val_loss": 1.8525,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 16,
+      "train_loss": 1.4086,
+      "val_loss": 1.8523,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    },
+    {
+      "epoch": 17,
+      "train_loss": 1.4122,
+      "val_loss": 1.8489,
+      "train_acc": 0.5135,
+      "val_acc": 0.3333
+    }
+  ],
+  "recommendation": "XGBoost is recommended for production regime-conditional strategy allocation due to superior tabular generalization and lower inference latency. The IEEE Access 2024 LSTM-DNN validates non-linear temporal sequence learning as an academic benchmark.",
+  "data_provenance": {
+    "ticker": "^NSEI",
+    "dataset": "data/nifty50.parquet",
+    "start": "2007-12-12",
+    "end": "2026-08-14",
+    "purpose": "academic benchmark only; not production recommendation approval"
+  }
+}

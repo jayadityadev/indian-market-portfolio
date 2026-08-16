@@ -13,7 +13,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 import numpy as np
 import pandas as pd
@@ -27,16 +27,19 @@ if str(SRC_DIR) not in sys.path:
 from api.schemas import AnalyzeRequest, AnalyzeResponse, MetricsResponse
 from backtester import run_backtest
 from data_pipeline import load_data, fetch_data, engineer_features
-from regime_detector import get_current_regime, get_regime_performance, fit_regimes
+from regime_detector import get_causal_regimes_for_analysis, get_regime_performance
 from classifier_inference import get_strategy_probabilities
+from model_registry import recommendation_state
 from risk_forecaster import simulate_drawdowns
 from market_outlook import get_market_outlook
+from db.service import save_analysis_record
 from strategies import (
     buy_and_hold, ma_crossover, rsi_strategy, momentum_strategy,
     bollinger_bands, dual_momentum,
 )
 
 router = APIRouter()
+SUPPORTED_TICKER = "^NSEI"
 
 STRATEGY_MAP = {
     "Buy & Hold": buy_and_hold,
@@ -49,8 +52,14 @@ STRATEGY_MAP = {
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-def run_full_analysis(req: AnalyzeRequest):
+def run_full_analysis(req: AnalyzeRequest, background_tasks: BackgroundTasks):
     """Run the full pipeline: data → features → regimes → backtest → ML → risk."""
+
+    if req.ticker != SUPPORTED_TICKER:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Current canonical dataset supports {SUPPORTED_TICKER} only.",
+        )
 
     # 1. Load / fetch data
     try:
@@ -96,20 +105,19 @@ def run_full_analysis(req: AnalyzeRequest):
 
     # 3. Regime detection
     try:
-        regime_df = fit_regimes(df)
-        current_regime = get_current_regime(df)
+        regime_df, regime_source = get_causal_regimes_for_analysis(
+            df, artifact_path=PROJECT_ROOT / "data" / "nifty50_regimes.parquet"
+        )
+        latest_regime = regime_df.dropna(subset=["regime"]).iloc[-1].to_dict()
+        current_regime = str(latest_regime["regime"])
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Regime detection failed: {exc}")
 
-    # 4. Run strategy backtests (single strategy + Buy & Hold if not "all")
-    strategies_to_run = STRATEGY_MAP
-    if req.strategy and req.strategy != "all" and req.strategy in STRATEGY_MAP:
-        strategies_to_run = {"Buy & Hold": buy_and_hold, req.strategy: STRATEGY_MAP[req.strategy]}
-
+    # 4. Run strategy backtests (run all 6 strategies so comparison table and heatmap are always complete)
     all_results = {}
     overall_metrics = {}
     equity_curves = {}
-    for name, func in strategies_to_run.items():
+    for name, func in STRATEGY_MAP.items():
         try:
             signals = func(df)
             bt = run_backtest(
@@ -178,17 +186,25 @@ def run_full_analysis(req: AnalyzeRequest):
     except Exception:
         pass
 
-    # 7. ML recommendation
+    # 7. Strategy Recommendation / Selection
     models_dir = PROJECT_ROOT / "models"
+    model_state = recommendation_state(models_dir)
     probs = {}
     if len(df) >= 252:
         df_recent = df.iloc[-252:]
-        probs = get_strategy_probabilities(df_recent, current_regime, models_dir=models_dir)
+        probs = get_strategy_probabilities(df_recent, latest_regime, models_dir=models_dir)
+        if model_state["status"] != "validated_ml":
+            probs = {}
 
     max_prob = max(probs.values()) if probs else 0.0
-    rec_source = "ml_classifier"
-    if max_prob >= 0.55:
+    rec_source = "historical_sharpe"
+
+    if req.strategy and req.strategy in STRATEGY_MAP and req.strategy != "all" and req.strategy != "Recommend Strategy":
+        recommended = req.strategy
+        rec_source = "user_selected"
+    elif max_prob >= 0.55:
         recommended = max(probs, key=probs.get)
+        rec_source = "ml_classifier"
     else:
         rec_source = "historical_sharpe"
         if not perf.empty:
@@ -235,7 +251,7 @@ def run_full_analysis(req: AnalyzeRequest):
     except Exception:
         pass
 
-    return AnalyzeResponse(
+    response = AnalyzeResponse(
         ticker=req.ticker,
         start_date=req.start_date,
         end_date=req.end_date,
@@ -244,6 +260,8 @@ def run_full_analysis(req: AnalyzeRequest):
         current_regime=current_regime,
         recommended_strategy=recommended,
         recommendation_source=rec_source,
+        recommendation_status=model_state["status"],
+        validation_reason=model_state["reason"],
         recommendation_reason=_build_reason(recommended, rec_source, current_regime, probs, perf if not perf.empty else None),
         recommended_exposure=exposure_limit,
         probabilities={k: round(v, 4) for k, v in probs.items()},
@@ -254,7 +272,10 @@ def run_full_analysis(req: AnalyzeRequest):
         regime_timeline=regime_timeline,
         risk_forecast=risk_data,
         market_outlook=outlook_data,
+        regime_source=regime_source,
     )
+    background_tasks.add_task(save_analysis_record, req, response)
+    return response
 
 
 def _build_reason(strategy: str, source: str, regime: str, probs: dict, perf_df) -> str:

@@ -6,6 +6,8 @@ Docs: http://localhost:8000/docs
 from __future__ import annotations
 
 import sys
+import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -20,6 +22,23 @@ from api.routes.backtest import router as backtest_router
 from api.routes.regime import router as regime_router
 from api.routes.recommend import router as recommend_router
 from api.routes.analyze import router as analyze_router
+from api.routes.benchmark import router as benchmark_router
+from api.routes.llm_report import router as llm_report_router
+from api.routes.news import router as news_router
+from db.connection import check_connection_health
+from db.service import init_db
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """Initialize persistence before serving requests; keep API usable if DB degrades."""
+    try:
+        init_db()
+    except Exception:
+        logger.exception("Database initialization failed; API will run in degraded mode.")
+    yield
 
 app = FastAPI(
     title="Indian Market Portfolio Intelligence API",
@@ -28,6 +47,7 @@ app = FastAPI(
         "Provides backtesting, regime detection, and strategy recommendations."
     ),
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # CORS — allow all origins for development
@@ -40,13 +60,21 @@ app.add_middleware(
 )
 
 # Mount routes
-app.include_router(backtest_router, tags=["Backtest"])
-app.include_router(regime_router, tags=["Regime"])
-app.include_router(recommend_router, tags=["Recommendation"])
-app.include_router(analyze_router, tags=["Full Analysis"])
+app.include_router(backtest_router, prefix="/api/v1", tags=["Backtest"])
+app.include_router(regime_router, prefix="/api/v1", tags=["Regime"])
+app.include_router(recommend_router, prefix="/api/v1", tags=["Recommendation"])
+app.include_router(analyze_router, prefix="/api/v1", tags=["Full Analysis"])
+app.include_router(benchmark_router, prefix="/api/v1", tags=["Benchmark"])
+app.include_router(llm_report_router, prefix="/api/v1", tags=["LLM Report"])
+app.include_router(news_router, prefix="/api/v1", tags=["News"])
 
 
 @app.get("/health")
 def health_check():
-    """Simple health check endpoint."""
-    return {"status": "ok", "version": "0.1.0"}
+    """Report API and database health without exposing credentials."""
+    database = check_connection_health()
+    return {
+        "status": "ok" if database["status"] == "healthy" else "degraded",
+        "version": "0.1.0",
+        "database": database,
+    }

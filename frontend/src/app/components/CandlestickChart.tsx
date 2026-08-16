@@ -153,7 +153,7 @@ export function CandlestickChart({ data, regimeTimeline, height = 400 }: Props) 
       chart.remove();
       chartRef.current = null;
     };
-  }, [data, height]);
+  }, [data, height, regimeTimeline]);
 
   if (data.length === 0) return null;
 

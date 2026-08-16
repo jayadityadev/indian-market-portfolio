@@ -66,6 +66,7 @@ class RegimeResponse(BaseModel):
     current_regime: str
     regime_distribution: dict[str, int]
     total_days: int
+    regime_source: str = "unknown"
 
 
 class StrategyProbability(BaseModel):
@@ -93,6 +94,8 @@ class RecommendResponse(BaseModel):
     current_regime: str
     recommended_strategy: str
     recommendation_source: str
+    recommendation_status: str
+    recommendation_reason: str
     recommended_exposure: str
     probabilities: list[StrategyProbability]
     risk_forecast: RiskForecast | None = None
@@ -107,6 +110,8 @@ class AnalyzeResponse(BaseModel):
     current_regime: str
     recommended_strategy: str
     recommendation_source: str
+    recommendation_status: str
+    validation_reason: str
     recommendation_reason: str
     recommended_exposure: str
     probabilities: dict[str, float]
@@ -117,3 +122,4 @@ class AnalyzeResponse(BaseModel):
     regime_timeline: list[dict]
     risk_forecast: dict | None = None
     market_outlook: MarketOutlook | None = None
+    regime_source: str = "unknown"

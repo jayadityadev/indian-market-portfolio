@@ -39,7 +39,7 @@ def generate_labels(
     df: pd.DataFrame,
     lookback: int = 252,
     forward: int = 63,
-    step: int = 21,
+    step: int = 14,
 ) -> pd.DataFrame:
     """Generate labeled dataset via rolling windows."""
     print(f"Generating labels with lookback={lookback}, forward={forward}, step={step}...")

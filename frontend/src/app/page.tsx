@@ -5,9 +5,11 @@ import { fetchAnalysis, AnalyzeResponse } from "@/lib/api";
 import { BeginnerView } from "./components/BeginnerView";
 import { ProView } from "./components/ProView";
 import { MagicBento } from "./components/MagicBento";
-import { ThemeToggle } from "./components/ThemeToggle";
+import { NewsPanel } from "./components/NewsPanel";
+import { BeginnerLandingBrief } from "./components/BeginnerLandingBrief";
+import { ProLandingTelemetry } from "./components/ProLandingTelemetry";
+import { errorMessage } from "@/lib/errors";
 import {
-  BarChart3,
   Play,
   Loader2,
   AlertTriangle,
@@ -17,11 +19,6 @@ import {
 
 const TICKER_OPTIONS = [
   { label: "NIFTY 50", value: "^NSEI" },
-  { label: "SENSEX", value: "^BSESN" },
-  { label: "Reliance", value: "RELIANCE.NS" },
-  { label: "HDFC Bank", value: "HDFCBANK.NS" },
-  { label: "TCS", value: "TCS.NS" },
-  { label: "Infosys", value: "INFY.NS" },
 ];
 
 const STRATEGY_OPTIONS = [
@@ -62,8 +59,8 @@ export default function Dashboard() {
         investment
       );
       setData(result);
-    } catch (e: any) {
-      setError(e.message || "Analysis failed");
+    } catch (error: unknown) {
+      setError(errorMessage(error, "Analysis failed"));
     } finally {
       setLoading(false);
     }
@@ -132,11 +129,10 @@ export default function Dashboard() {
 
       {/* ===== SIDEBAR ===== */}
       <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo">
-            <BarChart3 size={20} /> Market Intel
+        <div className="sidebar-header" style={{ borderBottom: "none", paddingBottom: 0 }}>
+          <div className="sidebar-section-label" style={{ margin: 0, fontSize: 11, color: "var(--accent-100)" }}>
+            Strategy Engine &amp; Controls
           </div>
-          <ThemeToggle />
         </div>
 
         {/* Mode Toggle */}
@@ -264,7 +260,15 @@ export default function Dashboard() {
 
       {/* ===== MAIN CONTENT ===== */}
       <main className="main-content">
-        {!data && !error && !loading && <MagicBento />}
+        <NewsPanel />
+
+        {/* Pre-Analysis Adaptive Landing */}
+        {!data && !error && !loading && (
+          <>
+            {mode === "beginner" ? <BeginnerLandingBrief /> : <ProLandingTelemetry />}
+            <MagicBento />
+          </>
+        )}
 
         {error && (
           <div className="error-banner">
@@ -272,8 +276,9 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Post-Analysis Views with Progressive Disclosure */}
         {data && mode === "beginner" && (
-          <BeginnerView data={data} strategy={strategy} />
+          <BeginnerView data={data} />
         )}
         {data && mode === "pro" && (
           <ProView data={data} strategy={strategy} />

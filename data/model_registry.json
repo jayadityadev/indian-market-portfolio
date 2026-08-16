@@ -1,0 +1,53 @@
+{
+  "registry_version": 1,
+  "frozen": true,
+  "frozen_at": "2026-08-16T07:43:45.914093+00:00",
+  "ticker": "^NSEI",
+  "dataset_manifest": "data/dataset_manifest.json",
+  "dataset_manifest_sha256": "6ab173a3632726efd93cf8f3f0982f77f9aa0fefed7929fe09f4fe4d2e2b0809",
+  "dataset": {
+    "start": "2007-12-12",
+    "end": "2026-08-14",
+    "rows": 4579,
+    "artifacts": {
+      "nifty50.parquet": {
+        "path": "data/nifty50.parquet",
+        "sha256": "f16bb459030194afe6e0d6d869673551897ed2f7f184c4e1362eaac010ad762f",
+        "bytes": 363195
+      },
+      "nifty50_regimes.parquet": {
+        "path": "data/nifty50_regimes.parquet",
+        "sha256": "dfaac91143c0d7953b613ed437e27277ad26af055ec29ded020d4b073a325419",
+        "bytes": 494742
+      },
+      "labeled_data.parquet": {
+        "path": "data/labeled_data.parquet",
+        "sha256": "9c399455ce24deda877e93f1f777e3e949b857ca89b45dcd7c886feac1d309c4",
+        "bytes": 20824
+      }
+    }
+  },
+  "models": {
+    "regime_model.pkl": {
+      "path": "models/regime_model.pkl",
+      "sha256": "295f398f2ab113a7c7904f12cc8ad05987191db75e08a824711e53cc02d36bdd",
+      "bytes": 3704
+    },
+    "xgboost_recommender.joblib": {
+      "path": "models/xgboost_recommender.joblib",
+      "sha256": "e5fbcdc4b59c3adce608f021ce503b6a601f75a9636f57f9609cf04147796a84",
+      "bytes": 836239
+    }
+  },
+  "recommendation": {
+    "status": "historical_fallback",
+    "source": "historical_sharpe",
+    "reason": "XGBoost cross-validation Macro F1 (0.241) is below gate (0.300).",
+    "model_path": "models/xgboost_recommender.joblib",
+    "cv_metrics": {
+      "accuracy": 0.37914230019493184,
+      "macro_f1": 0.24105098501856406,
+      "log_loss": 2.286918353281465
+    }
+  }
+}

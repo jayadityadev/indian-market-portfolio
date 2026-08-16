@@ -1,4 +1,6 @@
 "use client";
+
+import { useMemo } from "react";
 import { AnalyzeResponse } from "@/lib/api";
 import { CandlestickChart } from "./CandlestickChart";
 import { ComposedChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, BarChart, Bar, Cell } from "recharts";
@@ -19,12 +21,37 @@ export function ProView({ data, strategy }: { data: AnalyzeResponse; strategy: s
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${data.ticker}_metrics.csv`; a.click();
   };
 
-  const selMetrics = data.overall_metrics[strategy];
-  const bhMetrics = data.overall_metrics["Buy & Hold"];
   const showComparison = strategy === "Recommend Strategy";
+
+  // Merge all equity series by date into a single unified time-series
+  const chartData = useMemo(() => {
+    if (!data.equity_curves) return [];
+    const dateMap = new Map<string, Record<string, string | number>>();
+    
+    Object.entries(data.equity_curves).forEach(([strat, points]) => {
+      points.forEach((pt) => {
+        if (!dateMap.has(pt.date)) {
+          dateMap.set(pt.date, { date: pt.date });
+        }
+        const entry = dateMap.get(pt.date)!;
+        entry[strat] = pt.value;
+      });
+    });
+
+    return Array.from(dateMap.values()).sort((a, b) => (a.date as string).localeCompare(b.date as string));
+  }, [data.equity_curves]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {data.recommendation_status !== "validated_ml" && (
+        <div className="card" style={{ border: "1px solid var(--sideways)", background: "var(--sideways-bg)" }}>
+          <div className="card-title">ML needs more work</div>
+          <div style={{ fontSize: 13, color: "var(--text-200)", lineHeight: 1.6 }}>
+            ML is not driving this recommendation. Historical regime performance is active until validation clears the promotion gate.
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-200)", marginTop: 8 }}>{data.validation_reason}</div>
+        </div>
+      )}
       {/* Strategy Comparison Table — only when "Recommend Strategy" selected */}
       {showComparison && <div className="card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
@@ -59,14 +86,14 @@ export function ProView({ data, strategy }: { data: AnalyzeResponse; strategy: s
         <div className="card-title"><TrendingUp size={16} /> Equity Curves (₹{(data.initial_investment/100000).toFixed(0)}L initial)</div>
         <div style={{ height: 320 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart>
+            <ComposedChart data={chartData}>
               <CartesianGrid stroke="var(--bg-300)" strokeDasharray="3 3" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "var(--text-200)" }} tickFormatter={(d: string) => d.slice(0,7)} interval="preserveStartEnd" />
               <YAxis tick={{ fontSize: 10, fill: "var(--text-200)" }} tickFormatter={(v: number) => v >= 100000 ? `${(v/100000).toFixed(1)}L` : `${(v/1000).toFixed(0)}k`} />
-              <Tooltip contentStyle={{ background: "var(--bg-200)", border: "1px solid var(--bg-300)", borderRadius: 8, fontSize: 12, color: "var(--text-100)" }} formatter={(v: any) => [fmt(Math.round(Number(v))), ""]} />
+              <Tooltip contentStyle={{ background: "var(--bg-200)", border: "1px solid var(--bg-300)", borderRadius: 8, fontSize: 12, color: "var(--text-100)" }} formatter={(v: unknown) => [fmt(Math.round(Number(v))), ""]} />
               <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
-              {Object.entries(data.equity_curves).map(([n, pts]) => (
-                <Line key={n} data={pts} dataKey="value" name={n} stroke={SC[n] || "#3b82f6"} strokeWidth={n === strategy ? 3 : 1.5} strokeDasharray={n === "Buy & Hold" ? "8 4" : undefined} dot={false} connectNulls strokeOpacity={n === strategy || n === "Buy & Hold" ? 1 : 0.3} />
+              {Object.keys(data.equity_curves).map((n) => (
+                <Line key={n} dataKey={n} name={n} stroke={SC[n] || "#3b82f6"} strokeWidth={n === strategy ? 3 : 1.5} strokeDasharray={n === "Buy & Hold" ? "8 4" : undefined} dot={false} connectNulls strokeOpacity={n === strategy || n === "Buy & Hold" ? 1 : 0.3} />
               ))}
             </ComposedChart>
           </ResponsiveContainer>
@@ -88,7 +115,7 @@ export function ProView({ data, strategy }: { data: AnalyzeResponse; strategy: s
       </div>
 
       {/* Bottom Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 14 }}>
         {/* Heatmap */}
         <div className="card">
           <div className="card-title"><Flame size={16} /> Regime-Conditional CAGR</div>

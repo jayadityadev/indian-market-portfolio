@@ -48,6 +48,8 @@ export interface AnalyzeResponse {
   current_regime: string;
   recommended_strategy: string;
   recommendation_source: string;
+  recommendation_status: string;
+  validation_reason: string;
   recommendation_reason: string;
   recommended_exposure: string;
   probabilities: Record<string, number>;
@@ -59,7 +61,8 @@ export interface AnalyzeResponse {
   risk_forecast: { worst_case_10: number; median_50: number; best_case_90: number } | null;
 }
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+const API_V1 = `${API_BASE}/api/v1`;
 
 export async function fetchAnalysis(
   ticker: string = "^NSEI",
@@ -68,7 +71,7 @@ export async function fetchAnalysis(
   strategy: string = "all",
   initialInvestment: number = 100000
 ): Promise<AnalyzeResponse> {
-  const res = await fetch(`${API_BASE}/analyze`, {
+  const res = await fetch(`${API_V1}/analyze`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -9,6 +9,35 @@ wheels/
 # Virtual environments
 .venv
 
+# Secrets & Environment variables
+.env
+.env.*
+!.env.example
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node & Next.js
+node_modules/
+.next/
+frontend/node_modules/
+frontend/.next/
+
+# Agent conversation logs & scratch folders
+.agents/auditor_*
+.agents/challenger_*
+.agents/explorer_*
+.agents/m2_*
+.agents/reviewer_*
+.agents/sentinel*
+.agents/sub_orch_*
+.agents/survey_explorer_*
+.agents/test_writer_*
+.agents/worker_*
+.agents/orchestrator*
+
 # Archived docs (historical reference only)
 archive/
 

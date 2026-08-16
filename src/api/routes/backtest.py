@@ -4,7 +4,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 # Ensure src/ importable
 # routes/ -> api/ -> src/
@@ -20,8 +20,10 @@ from strategies import (
     buy_and_hold, ma_crossover, rsi_strategy, momentum_strategy,
     bollinger_bands, dual_momentum,
 )
+from db.service import save_backtest_record
 
 router = APIRouter()
+SUPPORTED_TICKER = "^NSEI"
 
 STRATEGY_MAP = {
     "Buy & Hold": buy_and_hold,
@@ -34,12 +36,17 @@ STRATEGY_MAP = {
 
 
 @router.post("/backtest", response_model=BacktestResponse)
-def run_backtest_endpoint(req: BacktestRequest):
+def run_backtest_endpoint(req: BacktestRequest, background_tasks: BackgroundTasks):
     """Run backtest for specified ticker, date range, and strategy."""
+    if req.ticker != SUPPORTED_TICKER:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Current canonical dataset supports {SUPPORTED_TICKER} only.",
+        )
     # Load data
     try:
         data_path = PROJECT_ROOT / "data" / "nifty50.parquet"
-        if data_path.exists():
+        if req.ticker == SUPPORTED_TICKER and data_path.exists():
             df = load_data(data_path)
             df = df.loc[req.start_date:req.end_date]
         else:
@@ -86,10 +93,12 @@ def run_backtest_endpoint(req: BacktestRequest):
             # Skip failed strategies, don't crash entire request
             continue
 
-    return BacktestResponse(
+    response = BacktestResponse(
         ticker=req.ticker,
         start_date=req.start_date,
         end_date=req.end_date,
         n_trading_days=len(df),
         results=results,
     )
+    background_tasks.add_task(save_backtest_record, req, response)
+    return response

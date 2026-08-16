@@ -1,0 +1,31 @@
+{
+  "manifest_version": 1,
+  "generated_at": "2026-08-16T07:43:45.914093+00:00",
+  "ticker": "^NSEI",
+  "source": "yfinance",
+  "requested_start_date": "2005-01-01",
+  "requested_end_date_exclusive": "2026-08-17",
+  "price_rows": 4579,
+  "price_start": "2007-12-12",
+  "price_end": "2026-08-14",
+  "regime_model": "GaussianHMM-3-state",
+  "label_lookback_days": 252,
+  "label_forward_days": 63,
+  "label_step_days": 14,
+  "schema_status": "valid",
+  "research_validation_status": "pending_walk_forward_strategy_evaluation",
+  "artifacts": {
+    "nifty50.parquet": {
+      "sha256": "f16bb459030194afe6e0d6d869673551897ed2f7f184c4e1362eaac010ad762f",
+      "bytes": 363195
+    },
+    "nifty50_regimes.parquet": {
+      "sha256": "dfaac91143c0d7953b613ed437e27277ad26af055ec29ded020d4b073a325419",
+      "bytes": 494742
+    },
+    "labeled_data.parquet": {
+      "sha256": "9c399455ce24deda877e93f1f777e3e949b857ca89b45dcd7c886feac1d309c4",
+      "bytes": 20824
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Indian Market Portfolio Intelligence
 
-## Final Project Positioning, Objective Clarification, and System Philosophy
+## System Philosophy, Architecture, and Design Decisions
 
 ---
 
@@ -8,772 +8,375 @@
 
 **Indian Market Portfolio Intelligence** is not a generic stock prediction app.
 
-It is a **regime-aware quantitative trading intelligence platform** designed for the Indian equity market, specifically focused on:
+It is a **regime-aware quantitative trading intelligence platform** for Indian equity markets that combines:
 
-* Strategy evaluation
-* Market regime identification
-* ML-assisted strategy recommendation
-* Probabilistic short-term forecasting
-* Risk simulation
-* Backtesting realism
-* Quantitative decision support
+- Statistical regime detection via Gaussian Hidden Markov Models
+- Validation-gated ML-assisted strategy recommendation via XGBoost, with legacy Random Forest compatibility
+- Deep learning benchmarking via LSTM-DNN (PyTorch)
+- Probabilistic risk simulation via bootstrap Monte Carlo
+- Institutional-grade AI market commentary via a multi-provider LLM analyst
+- A demo-ready REST API and a modern React frontend
 
-The project combines:
+The core idea:
 
-* quantitative finance,
-* machine learning,
-* market microstructure concepts,
-* strategy analytics,
-* and risk engineering
-
-into a single workflow targeted at Indian markets.
-
-The core idea is:
-
-> Instead of predicting exact stock prices, identify the current market regime and determine which trading strategy or directional outlook has the highest probability of succeeding under current market conditions.
-
-That distinction is critical.
+> Instead of predicting exact stock prices, identify the current market regime and determine which trading strategy has the highest probability of succeeding under current market conditions.
 
 ---
 
 # 2. What The Project Is NOT
 
-The project is NOT:
+- Not a guaranteed profit machine
+- Not a magical stock predictor
+- Not a high-frequency trading system
+- Not a brokerage replacement
+- Not a wealth management platform
 
-* a guaranteed profit machine,
-* a magical stock predictor,
-* a high-frequency trading system,
-* a brokerage replacement,
-* or an automated wealth management platform.
+The system does not attempt deterministic prediction. It provides:
 
-The system does NOT attempt deterministic prediction.
+- Probabilistic short-term market outlooks
+- Regime-aware strategy recommendations
+- Quantified risk understanding under the current regime
+- Institutional-quality AI narrative commentary
 
-It does NOT claim:
+The correct positioning:
 
-* guaranteed profits,
-* future certainty,
-* or precise price forecasting.
-
-Instead, it provides:
-
-* probabilistic short-term market outlooks,
-* regime-aware strategy recommendations,
-* quantified risk understanding,
-* and tactical trading intelligence.
-
-The project should NEVER be positioned as:
-
-> “AI predicts stock prices.”
-
-The correct positioning is:
-
-> “ML-assisted probabilistic market intelligence under varying market regimes.”
+> "ML-assisted probabilistic market intelligence under varying market regimes."
 
 ---
 
 # 3. Core Objective
 
-The actual objective of the project is:
-
-> To build a regime-aware machine learning platform that evaluates Indian equity market conditions and provides probabilistic short-term trading insights, strategy recommendations, and risk-aware analytics for both beginner and professional traders.
-
-The system aims to improve:
-
-* decision quality,
-* strategy selection,
-* market awareness,
-* and risk understanding.
-
-It does NOT aim to eliminate uncertainty.
+> Build a regime-aware machine learning platform that evaluates Indian equity market conditions and provides probabilistic short-term trading insights, strategy recommendations, and risk-aware analytics for both beginner and professional traders.
 
 ---
 
-# 4. Is This For Traders or Investors?
+# 4. Target Users
 
-## Primary Answer
+## Beginner Mode
 
-This is fundamentally a **trader-oriented platform**, not a traditional investor platform.
+Retail participants with little quantitative finance knowledge. The dashboard presents:
 
----
+| Output | Example |
+|---|---|
+| Market Outlook | Moderately Bullish |
+| Confidence | 64% |
+| Current Regime | Bull Market |
+| Suggested Style | Momentum-based |
+| Drawdown Risk | Medium |
+| AI Commentary | Narrative market report |
 
-## Why?
+The beginner interface abstracts all quantitative complexity. The system acts as:
+> "Decision abstraction through machine learning."
 
-The architecture is built around:
+## Professional Mode
 
-* strategy rotation,
-* regime adaptation,
-* tactical positioning,
-* signal generation,
-* short/medium horizon evaluation,
-* and dynamic market interpretation.
+Advanced traders, quants, finance students, and strategy researchers get:
 
-Those are trading-centric problems.
-
----
-
-## Evidence From The System
-
-### Regime Detection
-
-Bull/Bear/Sideways classification is primarily useful for:
-
-* tactical allocation,
-* strategy switching,
-* and timing.
-
-Long-term investors rarely require rolling regime detection.
+- Strategy equity curves (all 6 strategies on one chart)
+- OHLCV candlestick overlay
+- Regime heatmap (strategy × regime Sharpe matrix)
+- Regime timeline segments
+- XGBoost vs LSTM-DNN benchmark comparison
+- Risk forecast bands (10th / 50th / 90th percentile drawdowns)
+- Full ML probability distribution across strategies
+- Pinnable AI analyst report with provider selection
 
 ---
 
-### Strategy Engine
-
-Implemented strategies:
-
-* RSI
-* Momentum
-* Bollinger Bands
-* Moving Average Crossovers
-* Dual Momentum
-
-These are trading frameworks.
-
----
-
-### Backtesting Layer
-
-Includes:
-
-* slippage,
-* commissions,
-* execution lag,
-* and signal delays.
-
-Those are essential for trading systems.
-
----
-
-### ML Recommendation Layer
-
-The classifier predicts:
-
-> Which strategy has the highest probability of outperforming over the next 63 trading days.
-
-That is a tactical trading problem.
-
----
-
-# 5. Why “Portfolio Intelligence” Is Still Appropriate
-
-The system still performs:
-
-* risk analytics,
-* allocation reasoning,
-* strategy comparison,
-* and portfolio-level evaluation.
-
-However:
-
-* it is not a passive investment advisory tool,
-* and it is not a wealth management application.
-
-A more technically accurate positioning is:
-
-> “Regime-aware quantitative trading intelligence platform for Indian equity markets.”
-
----
-
-# 6. Target Users
-
-The platform serves two distinct user categories.
-
----
-
-# 7. Beginner Dashboard
-
-## Target User
-
-Retail participants with little or no quantitative finance knowledge.
-
----
-
-## Beginner Inputs
-
-The beginner should ideally provide only:
-
-* Stock/index
-* Capital amount
-* Optional risk tolerance
-
-The beginner should NOT:
-
-* choose strategies,
-* tune indicators,
-* optimize parameters,
-* or compare Sharpe ratios.
-
-That creates:
-
-* decision overload,
-* misuse,
-* and pseudo-confidence.
-
----
-
-## Beginner Outputs
-
-The system automatically generates:
-
-| Output          | Example                      |
-| --------------- | ---------------------------- |
-| Market Outlook  | Moderately Bullish           |
-| Confidence      | 64%                          |
-| Current Regime  | Bull Market                  |
-| Suggested Style | Momentum-based               |
-| Drawdown Risk   | Medium                       |
-| Warning         | Elevated volatility expected |
-
-The beginner dashboard abstracts quantitative complexity.
-
-The system effectively becomes:
-
-> “Decision abstraction through machine learning.”
-
----
-
-# 8. Professional Dashboard
-
-## Target User
-
-* Advanced traders
-* Quants
-* Finance students
-* Strategy researchers
-* Quantitative analysts
-
----
-
-## Features
-
-The professional dashboard includes:
-
-* Strategy comparison
-* Equity curves
-* Regime heatmaps
-* Drawdown analysis
-* Sharpe comparison
-* ML probabilities
-* Backtesting metrics
-* Risk simulations
-* Regime transitions
-
-The professional dashboard is:
-
-* analytical,
-* strategy-oriented,
-* and insight-driven.
-
-This layer acts as the actual quant research environment.
-
----
-
-# 9. System Architecture
+# 5. System Architecture
 
 ```mermaid
 graph TD
-    A[Data Pipeline] -->|OHLCV + Features| B[Regime Engine]
-    B -->|Bull/Bear/Sideways| C[Strategy Engine]
-    C -->|Signals| D[Backtest Engine]
-    D -->|Equity Curves + Metrics| E[Analysis API]
-    B -->|Features| F[ML Classifier]
-    F -->|Probabilities| E
-    E -->|JSON| G[Streamlit UI]
-    G -->|User Config| E
+    A[yfinance OHLCV] --> B[Data Pipeline]
+    B --> |20+ features| C[Gaussian HMM Regime Engine]
+    C --> |Bull/Bear/Sideways| D[Strategy Engine]
+    D --> |signals| E[Backtest Engine]
+    E --> |metrics + curves| F[Analysis API]
+    C --> |features| G[ML Recommender - XGBoost]
+    G --> |probabilities| F
+    C --> |features| H[ML Benchmark]
+    H --> |XGBoost| F
+    H --> |LSTM-DNN| F
+    E --> |metrics| I[Risk Forecaster - Bootstrap MC]
+    I --> |drawdown bands| F
+    F --> |AnalyzeResponse| J[LLM Analyst Waterfall]
+    J --> |Gemini| K[Report]
+    J --> |Groq| K
+    J --> |NVIDIA NIM| K
+    J --> |OpenRouter| K
+    J --> |Mock fallback| K
+    F --> |JSON| L[Next.js Frontend]
+    F --> |persist| M[(Neon PostgreSQL)]
 ```
 
 ---
 
-# 10. Component Breakdown
+# 6. Component Breakdown
 
 ## Data Pipeline (`src/data_pipeline.py`)
 
-* Fetches OHLCV data using yfinance
-* Engineers 20+ quantitative features
-* Includes:
+Fetches canonical NIFTY 50 OHLCV data via yfinance and engineers pipeline features. The recommender derives additional causal features from each 252-day decision window:
 
-  * RSI
-  * ADX
-  * MACD
-  * Volatility
-  * Rolling returns
-  * Trend indicators
+- RSI (14-day)
+- MACD and signal line
+- ADX (trend strength)
+- Bollinger Band width
+- Rolling 5/20/60-day returns
+- Rolling 20/60-day volatility
+- 12-month and 6-month momentum
+- Volume is retained for display and data quality checks, but zero-volume history is not trusted as a recommender feature.
 
 ---
 
-## Regime Engine (`src/regime_detector.py`)
+## Regime Engine — Gaussian HMM (`src/regime_detector.py`)
 
-Uses:
+**Architecture upgrade over v1's KMeans:**
 
-* KMeans clustering
-* rolling volatility,
-* rolling returns,
+| Property | KMeans (v1) | Gaussian HMM (v2) |
+|---|---|---|
+| Model type | Unsupervised clustering | Probabilistic generative model |
+| State dependencies | None (i.i.d.) | Markov transition matrix |
+| Output | Hard cluster assignment | Soft state probabilities |
+| Temporal continuity | None | Built-in via transition dynamics |
+| Interpretability | Centroid distances | Emission parameters + transition matrix |
 
-to classify the market into:
-
-* Bull
-* Bear
-* Sideways
+The HMM models market states as a latent 3-state Markov chain with Gaussian emissions over (returns, volatility). This captures regime persistence — Bull markets don't flip to Bear overnight.
 
 ---
 
 ## Strategy Engine (`src/strategies.py`)
 
-Implemented strategies:
-
-| Strategy        | Logic                        |
-| --------------- | ---------------------------- |
-| Buy & Hold      | Always Long                  |
-| MA Crossover    | 50 SMA > 200 SMA             |
-| RSI             | Oversold/Overbought logic    |
-| Momentum        | Positive 12m returns         |
-| Bollinger Bands | Mean-reversion logic         |
-| Dual Momentum   | Relative + absolute momentum |
+| Strategy | Logic | Best Regime |
+|---|---|---|
+| Buy & Hold | Always long (benchmark) | Bull |
+| MA Crossover | 50 SMA > 200 SMA | Trending |
+| RSI | Buy <30, sell >70 | Sideways |
+| Momentum | Long when 12m return > 0 | Bull |
+| Bollinger Bands | Mean-reversion on band touches | Sideways |
+| Dual Momentum | Positive absolute + relative momentum | Strong trends |
 
 ---
 
 ## Backtest Engine (`src/backtester.py`)
 
-Implements:
+Realistic execution modeling:
 
-* transaction costs,
-* slippage,
-* signal lag,
-* realistic execution assumptions.
+- **Commission**: configurable percentage (default 0 for MVP, adjustable via API)
+- **Slippage**: bid-ask spread simulation
+- **Signal lag**: T+1 execution (no look-ahead bias)
+- **Metrics**: CAGR, Sharpe, Sortino, Max Drawdown, Calmar, Volatility
+
+---
+
+## ML Benchmark (`src/models/`)
+
+### XGBoost (`src/models/recommender.py`)
+- Gradient-boosted trees on lagged returns + regime features
+- Walk-forward validation with explicit promotion gate; current production recommendation state is historical fallback.
+- Candidate scores remain behind promotion gate; current production recommendation state is historical fallback.
+
+### LSTM-DNN (`src/models/lstm_benchmark.py`)
+- PyTorch sequence model (2 LSTM layers + 2 FC layers)
+- Trained on rolling 60-day windows
+- Benchmarked against XGBoost on identical train/test splits
+
+The `/api/v1/benchmark` endpoint exposes a canonical-dataset head-to-head academic comparison and persists benchmark records. It does not approve production ML recommendations.
 
 ---
 
 ## ML Classifier (`src/classifier_training.py`)
 
-Uses Random Forest classification.
+Legacy Random Forest compatibility path:
 
-Target:
-
-* predict probability of strategy outperformance.
-
-Features:
-
-* lagged returns,
-* volatility,
-* regime state,
-* momentum,
-* trend indicators.
+- **Target**: which strategy outperforms Buy & Hold over the next 63 trading days
+- **Features**: lagged returns, rolling volatility, RSI, regime state embedding, momentum
+- **Output**: probability distribution over all 6 strategies
+- **Fallback**: if ML confidence < threshold, falls back to historical Sharpe ranking
 
 ---
 
 ## Risk Forecaster (`src/risk_forecaster.py`)
 
-Uses:
+Regime-conditioned bootstrap Monte Carlo:
 
-* regime-conditioned bootstrap resampling,
-* probabilistic scenario simulation,
-* future drawdown estimation.
-
-Outputs:
-
-* worst-case drawdown,
-* median case,
-* best-case scenarios.
+- Resamples daily returns within the current regime
+- Runs 1,000 forward simulation paths
+- Reports 10th / 50th / 90th percentile drawdown and exposure recommendations
 
 ---
 
-# 11. Short-Term Forecasting Philosophy
+## LLM Analyst (`src/llm/`)
 
-A major refinement in project direction is:
+### Provider Waterfall
+```
+GEMINI_API_KEY    → Gemini 2.0 Flash
+GROQ_API_KEY      → Llama 3.3 70B Versatile
+NVIDIA_NIM_API_KEY → meta/llama-3.3-70b-instruct (NVIDIA NIM)
+OPENROUTER_API_KEY → auto-selected
+(none required)   → Deterministic offline Mock
+```
 
-The system should NOT predict exact future prices.
+The waterfall cascades automatically on quota/timeout errors. Each provider uses the same structured 5-section institutional prompt:
 
-Instead:
+1. Executive Market & Regime Diagnosis
+2. Strategy Performance Review
+3. Risk Assessment
+4. Forward Outlook
+5. Trading Intelligence Summary
 
-> The system estimates probabilistic short-term market outlooks under current market conditions.
-
-This is significantly more defensible.
-
----
-
-# 12. What The Forecasting Layer Should Predict
-
-The system should output:
-
-| Metric                          | Example   |
-| ------------------------------- | --------- |
-| Probability of positive returns | 68%       |
-| Expected volatility             | Moderate  |
-| Expected regime continuation    | Bullish   |
-| Confidence score                | Medium    |
-| Risk-adjusted attractiveness    | Favorable |
-| Drawdown risk                   | Elevated  |
-
-This is superior to:
-
-> “The stock will reach ₹X.”
+### Pinning a Provider
+The `POST /api/v1/llm-report?provider=nvidia` query param lets callers pin a specific provider without changing any configuration. Model suffixes are also supported: `?provider=nvidia:meta/llama-3.3-70b-instruct`.
 
 ---
 
-# 13. Recommended Technical Wording
+## Persistence Layer (`src/db/`)
 
-The strongest positioning statement is:
+SQLAlchemy 2.0 ORM backed by Neon PostgreSQL (with automatic SQLite fallback and startup table initialization):
 
-> “The system does not attempt deterministic price prediction. Instead, it estimates the probability of favorable short-term performance under current market conditions using regime-aware machine learning models.”
-
-This wording demonstrates:
-
-* realism,
-* quantitative maturity,
-* and understanding of financial ML limitations.
+| Table | Contents |
+|---|---|
+| `backtest_logs` | Per-run strategy metrics + ticker + date range |
+| `regime_history` | HMM regime snapshots and timeline context |
+| `model_benchmarks` | XGBoost vs LSTM comparison results |
 
 ---
 
-# 14. Why This Is Still A CORE ML Project
+## FastAPI Backend (`src/api/`)
 
-The project is NOT merely using historical data.
+All endpoints are mounted under `/api/v1/` with OpenAPI documentation at `/docs`:
 
-Machine learning is structurally central.
+```
+GET  /health
+GET  /api/v1/regime?ticker=^NSEI
+GET  /api/v1/recommend?ticker=^NSEI
+POST /api/v1/backtest
+POST /api/v1/analyze
+GET  /api/v1/benchmark
+POST /api/v1/llm-report?provider=<optional>
+```
 
----
-
-## ML Usage Areas
-
-### A. Regime Classification
-
-Uses:
-
-* unsupervised learning,
-* KMeans clustering.
-
----
-
-### B. Strategy Recommendation
-
-Uses:
-
-* supervised learning,
-* Random Forest classification.
+CORS is open for all origins (development). For production, restrict `allow_origins` to your frontend domain.
 
 ---
 
-### C. Short-Term Outlook Estimation
+## Next.js Frontend (`frontend/`)
 
-Uses:
+| Page | Description |
+|---|---|
+| `/` | Unified Beginner / Pro dashboard with mode toggle |
+| `/regime` | Interactive HMM regime timeline and distribution |
+| `/benchmark` | XGBoost vs LSTM-DNN metrics side-by-side |
+| `/report` | AI Analyst report with provider dropdown (Gemini / Groq / NVIDIA / OpenRouter) |
 
-* probabilistic ML outputs,
-* confidence estimation,
-* feature-driven directional inference.
-
----
-
-### D. Risk Simulation
-
-Uses:
-
-* bootstrap probabilistic forecasting,
-* scenario generation.
+All pages are React Server Components with `"use client"` boundaries only where hooks are needed. API clients live in `frontend/src/lib/`.
 
 ---
 
-### E. Feature Engineering
+# 7. Why Gaussian HMM Instead of KMeans
 
-The system engineers predictive features such as:
+| Criterion | KMeans | Gaussian HMM |
+|---|---|---|
+| Captures temporal dependencies | ✗ | ✓ |
+| Models regime persistence | ✗ | ✓ |
+| Provides state probabilities | ✗ | ✓ |
+| Handles non-spherical clusters | ✗ | ✓ |
+| Regime transition modeling | ✗ | ✓ |
+| Interpretable parameters | Centroids | Means, covariances, transition matrix |
 
-* volatility,
-* lagged returns,
-* RSI,
-* MACD,
-* trend indicators,
-* regime states,
-* rolling returns.
-
----
-
-# 15. Why Deep Learning Was NOT Chosen
-
-This is one of the most important technical decisions.
-
-The decision to avoid:
-
-* LSTM,
-* CNN,
-* Transformer,
-* GRU,
-* and deep reinforcement learning
-
-is rational and defensible.
+Real markets exhibit persistence — a Bull regime tends to remain Bull for many consecutive days. HMM's Markov structure captures this directly.
 
 ---
 
-# 16. Financial Markets Are Highly Noisy
+# 8. Why Random Forest Instead of Deep Learning
 
-Financial time series suffer from:
+The modern recommendation path uses XGBoost. Legacy Random Forest artifacts remain supported while models are regenerated from the canonical dataset. LSTM remains a *comparison benchmark*, not the primary system.
 
-* regime shifts,
-* changing distributions,
-* low signal-to-noise ratio,
-* weak stationarity,
-* and unstable generalization.
+### Financial time series are inherently noisy
 
-Several surveyed papers acknowledge these limitations.
+- Low signal-to-noise ratio
+- Regime shifts violate stationarity assumptions
+- Deep models trained on one regime can destroy alpha when regimes change
 
-Deep learning often performs well academically but struggles with robustness in live markets.
+### Price prediction ≠ tradable alpha
 
----
+LSTM papers typically optimise MSE/RMSE. Traders care about Sharpe ratio, max drawdown, and consistency. Good prediction accuracy does not guarantee profitable trading.
 
-# 17. Price Prediction ≠ Tradable Alpha
+### Interpretability
 
-Many deep learning papers optimize:
+Random Forest provides:
+- Feature importances
+- Regime-traceable decision logic
+- Probability calibration via cross-validation
 
-* MSE,
-* RMSE,
-* MAE,
-* R².
+Neural networks are black boxes. For financial systems where decisions have capital consequences, interpretability is critical.
 
-But traders actually care about:
+### Data constraints
 
-* Sharpe ratio,
-* drawdown,
-* consistency,
-* execution realism,
-* and robustness.
+The system operates on Indian equity daily data (~10 years). LSTM and Transformer systems require:
+- Massive datasets
+- High-frequency data
+- Large compute budgets
 
-Good prediction accuracy does not guarantee profitable trading.
+Tree ensembles are strongly preferred for tabular financial data with limited samples.
 
 ---
 
-# 18. Deep Learning Requires Massive Data
+# 9. Comparison Against Existing Platforms
 
-LSTM and Transformer systems typically require:
+| Platform | Strength | Gap Filled by This System |
+|---|---|---|
+| Zerodha Streak | Strategy execution | ML/regime intelligence layer |
+| TradingView | Charting | Adaptive strategy recommendation |
+| QuantConnect | Quant infrastructure | Beginner-accessible interface |
+| MetaTrader | Execution | Intelligence and LLM commentary |
+| Smallcase | Portfolio themes | Regime adaptation |
 
-* massive datasets,
-* high-frequency data,
-* institutional infrastructure,
-* and large computational resources.
-
-This project operates on:
-
-* Indian equity daily data,
-* interpretable strategy logic,
-* limited historical samples,
-* and regime-aware analytics.
-
-Traditional ML is more suitable.
+The differentiator:
+> "ML-driven regime-aware strategy and outlook recommendation for Indian markets, with LLM-generated institutional commentary."
 
 ---
 
-# 19. Interpretability Matters
+# 10. Test Coverage
 
-Random Forest and regime-based systems provide:
+| Test File | Coverage Area |
+|---|---|
+| `test_e2e_v1_routes.py` | All 7 `/api/v1/*` endpoints (50 tests) |
+| `test_e2e_api_llm.py` | LLM waterfall, provider cascade, adversarial inputs |
+| `test_e2e_ml_db.py` | ML pipeline + Neon PostgreSQL persistence |
+| `test_db.py` | ORM models, schema migrations |
+| `test_llm.py` | Provider unit tests, authentication errors |
+| `test_regime.py` | HMM regime detection accuracy |
+| `test_recommender.py` | ML target, scoring, serialization, and inference contracts |
 
-* feature visibility,
-* explainability,
-* regime traceability,
-* and transparent decision logic.
-
-Deep neural networks are effectively black boxes.
-
-For financial systems, interpretability is extremely important.
-
----
-
-# 20. Backtest Overfitting Is A Serious Risk
-
-Modern financial ML literature repeatedly warns about:
-
-* backtest overfitting,
-* false discoveries,
-* unstable generalization,
-* and unrealistic performance claims.
-
-Complex deep learning systems are especially vulnerable.
-
-The architecture intentionally prioritizes:
-
-* robustness,
-* explainability,
-* and realistic evaluation.
+Run `uv run pytest tests/ -q` for current test status. Tests verify software contracts; they do not prove profitable future trading.
 
 ---
 
-# 21. Why KMeans + Random Forest Was A Strong Choice
+# 11. Limitations and Future Work
 
-## KMeans
+### Current Limitations
 
-Useful for:
+- Daily timeframe only (no intraday or tick data)
+- NIFTY 50 and major indices (no portfolio of individual stocks)
+- No live order execution or paper trading
+- No walk-forward parameter optimisation
+- No portfolio-level position sizing optimisation
+- LSTM benchmark is academic and refreshed separately from production recommendation artifacts
+- Market news is contextual evidence and does not change quantitative recommendations
+- Current walk-forward results show weak ML signal; low-quality persisted XGBoost models are gated to historical regime fallback.
 
-* unsupervised regime discovery,
-* volatility-return segmentation,
-* interpretable clustering.
+### Planned Extensions
 
----
-
-## Random Forest
-
-Advantages:
-
-* strong tabular-data performance,
-* low overfitting risk,
-* interpretability,
-* nonlinear decision boundaries,
-* small-data compatibility.
-
-Financial tabular datasets are often better suited to:
-
-* tree ensembles,
-* boosting systems,
-* and probabilistic models
-
-than large deep learning architectures.
+- Live data feed via NSE/BSE WebSocket
+- Multi-asset portfolio optimisation (Markowitz + Black-Litterman)
+- Walk-forward rolling retraining pipeline
+- Transformer-based regime detection for comparison
+- WhatsApp / Telegram bot for beginner alert delivery
 
 ---
 
-# 22. Comparison Against Existing Platforms
+# 12. Final Technical Positioning
 
-| Platform       | Strength             | Limitation                          |
-| -------------- | -------------------- | ----------------------------------- |
-| Zerodha Streak | Strategy execution   | Weak ML/regime intelligence         |
-| TradingView    | Charting             | No adaptive strategy recommendation |
-| QuantConnect   | Quant infrastructure | Too technical for retail            |
-| MetaTrader     | Execution            | Weak intelligence layer             |
-| Smallcase      | Portfolio themes     | No regime adaptation                |
+> "Indian Market Portfolio Intelligence is a regime-aware quantitative decision-support platform for Indian equity markets. It combines Gaussian HMM regime detection, six rule-based strategies, backtesting, bootstrap risk simulation, validation-gated ML experiments, and a multi-provider LLM analyst through a FastAPI backend and Next.js 16 frontend."
 
----
-
-# 23. Core Differentiator
-
-The differentiator is NOT:
-
-* charting,
-* indicators,
-* or backtesting alone.
-
-The differentiator is:
-
-> “ML-driven regime-aware strategy and outlook recommendation for Indian markets.”
-
-That combination is relatively uncommon.
-
----
-
-# 24. What Has Been Implemented
-
-## Completed Components
-
-### Data Pipeline
-
-* OHLCV ingestion
-* feature engineering
-* indicator generation
-
----
-
-### Regime Engine
-
-* Bull/Bear/Sideways classification
-
----
-
-### Strategy Engine
-
-* 6 trading strategies
-
----
-
-### Backtest Engine
-
-* realistic execution assumptions
-
----
-
-### ML Classifier
-
-* Random Forest probability estimation
-
----
-
-### Risk Forecaster
-
-* bootstrap-based probabilistic simulation
-
----
-
-### Dashboards
-
-* Beginner abstraction layer
-* Professional analytics layer
-
----
-
-# 25. Realistic Expectations From The System
-
-The system should improve:
-
-* strategy selection,
-* tactical decision-making,
-* market awareness,
-* and risk understanding.
-
-The system is NOT expected to:
-
-* guarantee profits,
-* perfectly predict markets,
-* or eliminate uncertainty.
-
-The project aims for:
-
-> “Probabilistic improvement in trading decisions under varying market conditions.”
-
----
-
-# 26. Final Technical Positioning
-
-The cleanest technical description of the project is:
-
-> “Indian Market Portfolio Intelligence is a regime-aware quantitative trading intelligence platform for Indian equity markets that combines machine learning, strategy backtesting, probabilistic short-term forecasting, and risk simulation to generate context-sensitive trading insights under varying market conditions.”
-
----
-
-# 27. Strengths Of The Project
-
-## Major Strengths
-
-* Clear quant architecture
-* Practical applicability
-* Realistic trading assumptions
-* Proper ML integration
-* Strong beginner/pro separation
-* Explainable ML pipeline
-* Better grounded than most stock prediction projects
-
----
-
-# 28. Current Weaknesses
-
-## Limitations
-
-* Limited asset universe
-* Daily timeframe only
-* No live trading execution
-* No portfolio optimization yet
-* No adaptive online learning
-* Simplistic KMeans regime logic
-* Limited strategy library
-
----
-
-# 29. Most Important Clarification
-
-The project is NOT:
-
-> “AI predicts future stock prices.”
-
-The project IS:
-
-> “Machine learning helps identify market conditions and estimate which trading strategies or directional outlooks are most favorable under current market regimes.”
-
-That is the actual core objective.
+The system does not claim to predict markets. It claims to improve the quality of trading decisions under uncertainty.

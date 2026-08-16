@@ -15,6 +15,22 @@ from pathlib import Path
 from classifier_features import build_feature_matrix
 
 
+def purge_overlapping_labels(
+    frame: pd.DataFrame,
+    prices_df: pd.DataFrame,
+    test_start: pd.Timestamp,
+    forward_days: int = 63,
+) -> pd.DataFrame:
+    """Remove train windows whose forward label reaches into test period."""
+    price_index = prices_df.index
+    test_position = price_index.get_loc(test_start)
+    eligible_dates = {
+        price_index[position]
+        for position in range(0, max(0, test_position - forward_days))
+    }
+    return frame[frame["window_end_date"].isin(eligible_dates)]
+
+
 def walk_forward_sanity_check(labeled_path: Path, prices_path: Path, regimes_path: Path):
     print("--- Walk-Forward Sanity Check (70/30 Split) ---")
     
@@ -51,6 +67,12 @@ def walk_forward_sanity_check(labeled_path: Path, prices_path: Path, regimes_pat
         split_idx = int(len(strat_df) * 0.7)
         train_df = strat_df.iloc[:split_idx]
         test_df = strat_df.iloc[split_idx:]
+        train_before_purge = len(train_df)
+        train_df = purge_overlapping_labels(
+            train_df,
+            prices_df,
+            pd.Timestamp(test_df["window_end_date"].iloc[0]),
+        )
         
         # Must check if train/test have both classes
         if len(train_df["label"].unique()) < 2 or len(test_df["label"].unique()) < 2:
@@ -87,6 +109,7 @@ def walk_forward_sanity_check(labeled_path: Path, prices_path: Path, regimes_pat
         test_auc = roc_auc_score(y_test, test_probs)
         
         print(f"\n--- Strategy: {strategy} ---")
+        print(f"  Purged overlapping train windows: {train_before_purge - len(train_df)}")
         print(f"  Train AUC: {train_auc:.2f} | Acc: {train_acc:.2f}")
         print(f"  Test  AUC: {test_auc:.2f} | Acc: {test_acc:.2f}")
         
@@ -99,7 +122,7 @@ def walk_forward_sanity_check(labeled_path: Path, prices_path: Path, regimes_pat
 
 
 if __name__ == "__main__":
-    base = Path(__file__).resolve().parent
+    base = Path(__file__).resolve().parent.parent
     labeled = base / "data" / "labeled_data.parquet"
     prices = base / "data" / "nifty50.parquet"
     regimes = base / "data" / "nifty50_regimes.parquet"
