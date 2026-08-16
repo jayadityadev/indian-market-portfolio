@@ -12,19 +12,23 @@ from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.pool import QueuePool, StaticPool
 
+from dotenv import load_dotenv
+
 logger = logging.getLogger(__name__)
 
 # Constants
 DEFAULT_SQLITE_RELATIVE_PATH = "data/portfolio_intel.db"
 ENV_DATABASE_URL_KEY = "DATABASE_URL"
 
-_engine: Optional[Engine] = None
-_engine_lock = threading.Lock()
-
-
 def get_project_root() -> Path:
     """Resolve project root directory (indian-market-portfolio/)."""
     return Path(__file__).resolve().parent.parent.parent
+
+# Always load .env from project root if available
+load_dotenv(get_project_root() / ".env")
+
+_engine: Optional[Engine] = None
+_engine_lock = threading.Lock()
 
 
 def get_default_sqlite_url() -> str:

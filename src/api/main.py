@@ -15,8 +15,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Ensure src/ importable for all modules
 SRC_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = SRC_DIR.parent
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
+
+from dotenv import load_dotenv
+load_dotenv(PROJECT_ROOT / ".env")
 
 from api.routes.backtest import router as backtest_router
 from api.routes.regime import router as regime_router
